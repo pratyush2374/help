@@ -1,0 +1,46 @@
+PRACTICAL 4: Implement SPAN
+===========================
+
+IP PLAN (subnet mask 255.0.0.0)
+  PC0       IP 10.1.1.100
+  Server0   IP 10.1.1.200
+  Switch0 (2960-24TT): Fa0/1 Server0, Fa0/2 PC0, Fa0/3 Sniffer0
+  SPAN: source Fa0/1 (Server0), destination Fa0/3 (Sniffer0)
+
+1. BUILD THE TOPOLOGY
+   - Switches -> drag 1 switch 2960-24TT
+   - End Devices -> drag 1 Server-PT, 1 PC-PT, 1 Sniffer
+   - Connections -> Automatic
+   - Connect in this order so the ports match: Server0 -> Switch0 (Fa0/1),
+     PC0 -> Switch0 (Fa0/2), Sniffer0 -> Switch0 (Fa0/3)
+   - Wait for the link dots to turn green
+
+2. SET THE IPs
+   - Click PC0 -> Desktop -> IP Configuration
+   - Static, IP 10.1.1.100, Subnet Mask 255.0.0.0
+   - Click Server0 -> Desktop -> IP Configuration
+   - Static, IP 10.1.1.200, Subnet Mask 255.0.0.0
+
+3. SET UP THE SNIFFER
+   - Click Sniffer0 -> GUI tab
+   - Service On, Incoming Packets Port0
+   - Default filter is STP only
+   - Edit Filters -> Show All/None to clear everything
+   - Tick only ICMP, then OK
+
+4. CONFIGURE SPAN ON THE SWITCH (Switch0 -> CLI tab -> press Enter)
+     enable
+     conf t
+     monitor session 1 source int fa0/1
+     monitor session 1 destination int fa0/3
+     end
+     show monitor
+   - show monitor lists Source Ports Both: Fa0/1, Destination Ports: Fa0/3
+
+5. CHECK IT WORKS
+   - Click PC0 -> Desktop -> Command Prompt:
+       ping 10.1.1.200
+   - Check the address is 10.1.1.200 (not 10.1.1200)
+   - First ping may time out, run it again; replies mean the link works
+   - Click Sniffer0 -> GUI tab: ICMP packets appear in the event list
+   - Click a packet to see its details (source 10.1.1.200, destination 10.1.1.100)
