@@ -1,0 +1,13 @@
+import numpy as np
+
+
+def isscalar(num):
+    if isinstance(num, np.generic):
+        return True
+    else:
+        return False
+
+
+print(np.isscalar(3.7))
+print(np.isscalar([32, 33, 34, 35]))
+print(np.isscalar(False))
